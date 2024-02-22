@@ -563,6 +563,17 @@ CAPABILITY_TO_SENSORS = {
     ],
     "samsungce.doorState": [Map("doorState", "Door State", None, None, None, None)],
     "samsungce.kidsLock": [Map("lockState", "Kids Lock State", None, None, None, None)],
+    "samsungce.microwavePower": [
+        Map(
+            "powerLevel",
+            "Microwave power",
+            None,
+            None,
+            None,
+            None,
+        ),
+        Map("status", "Meat Probe Status", None, None, None, None),
+    ], 
     "samsungce.meatProbe": [
         Map(
             "temperatureSetpoint",
