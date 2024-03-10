@@ -39,18 +39,18 @@ STORAGE_VERSION = 1
 # Ordered 'specific to least-specific platform' in order for capabilities
 # to be drawn-down and represented by the most appropriate platform.
 PLATFORMS = [
+    "binary_sensor",
+    "button",
     "climate",
+    "cover",
     "fan",
     "light",
     "lock",
-    "cover",
     "number",
-    "select",
-    "button",
-    "switch",
-    "binary_sensor",
-    "sensor",
     "scene",
+    "select",
+    "sensor",
+    "switch",
 ]
 
 IGNORED_CAPABILITIES = [
@@ -72,4 +72,9 @@ TOKEN_REFRESH_INTERVAL = timedelta(days=14)
 
 VAL_UID = "^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$"
 VAL_UID_MATCHER = re.compile(VAL_UID)
-FRIDGE_LIST = ["22K_REF_LCD_FHUB7.0", "23K_REF_LCD_FHUB8.0","21K_REF_LCD_FHUB6.0", "ARTIK051_REF_17K"]
+FRIDGE_LIST = [
+    "22K_REF_LCD_FHUB7.0",
+    "23K_REF_LCD_FHUB8.0",
+    "21K_REF_LCD_FHUB6.0",
+    "ARTIK051_REF_17K",
+]

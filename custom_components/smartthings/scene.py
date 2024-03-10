@@ -2,11 +2,12 @@
 from typing import Any
 
 from homeassistant.components.scene import Scene
+from homeassistant.core import HomeAssistant
 
 from .const import DATA_BROKERS, DOMAIN
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
     """Add switches for a config entry."""
     broker = hass.data[DOMAIN][DATA_BROKERS][config_entry.entry_id]
     async_add_entities([SmartThingsScene(scene) for scene in broker.scenes.values()])
@@ -15,7 +16,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class SmartThingsScene(Scene):
     """Define a SmartThings scene."""
 
-    def __init__(self, scene):
+    def __init__(self, scene) -> None:
         """Init the scene class."""
         self._scene = scene
 

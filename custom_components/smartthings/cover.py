@@ -7,16 +7,17 @@ from pysmartthings import Attribute, Capability
 
 from homeassistant.components.cover import (
     ATTR_POSITION,
-    CoverDeviceClass,
-    CoverEntityFeature,
     DOMAIN as COVER_DOMAIN,
     STATE_CLOSED,
     STATE_CLOSING,
     STATE_OPEN,
     STATE_OPENING,
+    CoverDeviceClass,
     CoverEntity,
+    CoverEntityFeature,
 )
 from homeassistant.const import ATTR_BATTERY_LEVEL
+from homeassistant.core import HomeAssistant
 
 from . import SmartThingsEntity
 from .const import DATA_BROKERS, DOMAIN
@@ -31,7 +32,7 @@ VALUE_TO_STATE = {
 }
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
     """Add covers for a config entry."""
     broker = hass.data[DOMAIN][DATA_BROKERS][config_entry.entry_id]
     async_add_entities(
@@ -62,7 +63,7 @@ def get_capabilities(capabilities: Sequence[str]) -> Sequence[str] | None:
 class SmartThingsCover(SmartThingsEntity, CoverEntity):
     """Define a SmartThings cover."""
 
-    def __init__(self, device):
+    def __init__(self, device) -> None:
         """Initialize the cover class."""
         super().__init__(device)
         self._device_class = None

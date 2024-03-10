@@ -7,6 +7,7 @@ from collections.abc import Sequence
 from pysmartthings.device import DeviceEntity
 
 from homeassistant.components.button import ButtonEntity
+from homeassistant.core import HomeAssistant
 
 from . import SmartThingsEntity
 from .const import DATA_BROKERS, DOMAIN
@@ -50,7 +51,7 @@ CAPABILITY_TO_BUTTON = {
 }
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
     """Add switches for a config entry."""
     broker = hass.data[DOMAIN][DATA_BROKERS][config_entry.entry_id]
     buttons = []
@@ -121,6 +122,7 @@ class SmartThingsButton(SmartThingsEntity, ButtonEntity):
 
     @property
     def icon(self) -> str | None:
+        """Icon."""
         return self._icon
 
     @property
