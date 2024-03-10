@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from pysmartthings import Attribute, Capability
 
 from homeassistant.components.lock import LockEntity
+from homeassistant.core import HomeAssistant
 
 from . import SmartThingsEntity
 from .const import DATA_BROKERS, DOMAIN
@@ -21,7 +22,7 @@ ST_LOCK_ATTR_MAP = {
 }
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
     """Add locks for a config entry."""
     broker = hass.data[DOMAIN][DATA_BROKERS][config_entry.entry_id]
     async_add_entities(

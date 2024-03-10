@@ -1,12 +1,10 @@
 """Support for sensors through the SmartThings cloud API."""
 from __future__ import annotations
 
+import asyncio
 from collections import namedtuple
 from collections.abc import Sequence
-
 import json
-
-import asyncio
 
 from pysmartthings import Attribute, Capability
 from pysmartthings.device import DeviceEntity
@@ -16,28 +14,24 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorStateClass,
 )
-
 from homeassistant.const import (
-    UnitOfElectricCurrent,
-    UnitOfElectricPotential,
-    UnitOfEnergy,
-    UnitOfLength,
-    UnitOfMass,
-    UnitOfPower,
-    UnitOfTemperature,
-    UnitOfTime,
-    UnitOfVolume,
     AREA_SQUARE_METERS,
     CONCENTRATION_PARTS_PER_MILLION,
     LIGHT_LUX,
     PERCENTAGE,
+    UnitOfElectricPotential,
+    UnitOfEnergy,
+    UnitOfMass,
+    UnitOfPower,
+    UnitOfTemperature,
+    UnitOfVolume,
 )
-
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.util import dt as dt_util
 
 from . import SmartThingsEntity
-from .const import DATA_BROKERS, DOMAIN, UNIT_MAP, FRIDGE_LIST
+from .const import DATA_BROKERS, DOMAIN, FRIDGE_LIST, UNIT_MAP
 
 Map = namedtuple(
     "map", "attribute name default_unit device_class state_class entity_category"
@@ -573,7 +567,7 @@ CAPABILITY_TO_SENSORS = {
             None,
         ),
         Map("status", "Meat Probe Status", None, None, None, None),
-    ], 
+    ],
     "samsungce.meatProbe": [
         Map(
             "temperatureSetpoint",
@@ -607,7 +601,8 @@ POWER_CONSUMPTION_REPORT_NAMES = [
     "energySaved",
 ]
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+
+async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
     """Add binary sensors for a config entry."""
     broker = hass.data[DOMAIN][DATA_BROKERS][config_entry.entry_id]
     sensors = []
@@ -657,12 +652,16 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                     [
                         SamsungOvenWarmingCenter(device),
                         SamsungOcfTemperatureSensor(
-                            device, "Temperature", "/temperature/current/cook/0"
+                            device,
+                            "Temperature",
+                            "/temperature/current/cook/0",
+                            UnitOfTemperature.CELSIUS,
                         ),
                         SamsungOcfTemperatureSensor(
                             device,
                             "Meat Probe Temperature",
                             "/temperature/current/prob/0",
+                            UnitOfTemperature.CELSIUS,
                         ),
                     ]
                 )
@@ -673,11 +672,13 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                             device,
                             "Cooler Temperature",
                             "/temperature/current/cooler/0",
+                            UnitOfTemperature.CELSIUS,
                         ),
                         SamsungOcfTemperatureSensor(
                             device,
                             "Freezer Temperature",
                             "/temperature/current/freezer/0",
+                            UnitOfTemperature.CELSIUS,
                         ),
                     ]
                 )
@@ -726,7 +727,7 @@ class SmartThingsSensor(SmartThingsEntity, SensorEntity):
 
     @property
     def available(self) -> bool:
-        """check if sensor value is available"""
+        """Check if sensor value is available."""
         if self._device.status.attributes[self._attribute].value is None:
             return False
         return True
@@ -738,7 +739,7 @@ class SmartThingsSensor(SmartThingsEntity, SensorEntity):
         if self._device_class != SensorDeviceClass.TIMESTAMP:
             return value
 
-        return dt_util.parse_datetime(value)        
+        return dt_util.parse_datetime(value)
 
     @property
     def device_class(self):
@@ -755,7 +756,7 @@ class SmartThingsSensor(SmartThingsEntity, SensorEntity):
 class SmartThingsThreeAxisSensor(SmartThingsEntity, SensorEntity):
     """Define a SmartThings Three Axis Sensor."""
 
-    def __init__(self, device, index):
+    def __init__(self, device, index) -> None:
         """Init the class."""
         super().__init__(device)
         self._index = index
@@ -808,7 +809,7 @@ class SmartThingsPowerConsumptionSensor(SmartThingsEntity, SensorEntity):
 
     @property
     def available(self) -> bool:
-        """check if sensor value is available"""
+        """Check if sensor value is available."""
         value = self._device.status.attributes[Attribute.power_consumption].value
         if value is None or value.get(self.report_name) is None:
             return False
@@ -842,19 +843,20 @@ class SmartThingsPowerConsumptionSensor(SmartThingsEntity, SensorEntity):
 
     @property
     def icon(self) -> str | None:
+        """Return Icon."""
         if self.report_name in ("deltaEnergy", "powerEnergy"):
             return "mdi:current-ac"
         return None
 
 
 class SamsungOvenWarmingCenter(SmartThingsEntity, SensorEntity):
-    """Define Samsung Cooktop Warming Center Sensor"""
+    """Define Samsung Cooktop Warming Center Sensor."""
 
     execute_state = "Off"
     init_bool = False
 
     def startup(self):
-        """Make sure that OCF page visits mode on startup"""
+        """Make sure that OCF page visits mode on startup."""
         tasks = []
         tasks.append(self._device.execute("mode/vs/0"))
         asyncio.gather(*tasks)
@@ -889,31 +891,30 @@ class SamsungOvenWarmingCenter(SmartThingsEntity, SensorEntity):
 
     @property
     def icon(self):
+        """Return Icon."""
         if self.execute_state in ("High", "Mid", "Low"):
             return "mdi:checkbox-blank-circle"
         return "mdi:checkbox-blank-circle-outline"
 
 
 class SamsungOcfTemperatureSensor(SmartThingsEntity, SensorEntity):
-    """Define Samsung OCF Temperature Sensor"""
+    """Define Samsung OCF Temperature Sensor."""
 
     execute_state = 0
     unit_state = ""
     init_bool = False
 
     def __init__(
-        self,
-        device: DeviceEntity,
-        name: str,
-        page: str,
+        self, device: DeviceEntity, name: str, page: str, default_unit_of_measurement
     ) -> None:
         """Init the class."""
         super().__init__(device)
         self._name = name
         self._page = page
+        self.default_unit_of_measurement = default_unit_of_measurement
 
     def startup(self):
-        """Make sure that OCF page visits mode on startup"""
+        """Make sure that OCF page visits mode on startup."""
         tasks = []
         tasks.append(self._device.execute(self._page))
         asyncio.gather(*tasks)
@@ -960,9 +961,13 @@ class SamsungOcfTemperatureSensor(SmartThingsEntity, SensorEntity):
 
     @property
     def native_unit_of_measurement(self) -> str | None:
-        """Return unit of measurement"""
+        """Return unit of measurement."""
         if self._device.status.attributes[Attribute.data].data["href"] == self._page:
             self.unit_state = self._device.status.attributes[Attribute.data].value[
                 "payload"
             ]["units"]
-        return UNIT_MAP.get(self.unit_state) if self.unit_state else None
+        return (
+            UNIT_MAP.get(self.unit_state)
+            if self.unit_state
+            else self.default_unit_of_measurement
+        )

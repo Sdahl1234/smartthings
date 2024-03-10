@@ -1,15 +1,15 @@
 """Support for select through the SmartThings cloud API."""
 from __future__ import annotations
 
+import asyncio
 from collections import namedtuple
 from collections.abc import Sequence
 
-from homeassistant.components.select import SelectEntity
-
-import asyncio
-
 from pysmartthings import Attribute
 from pysmartthings.device import DeviceEntity
+
+from homeassistant.components.select import SelectEntity
+from homeassistant.core import HomeAssistant
 
 from . import SmartThingsEntity
 from .const import DATA_BROKERS, DOMAIN
@@ -56,7 +56,7 @@ CAPABILITY_TO_SELECT = {
 }
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
     """Add select for a config entries."""
     broker = hass.data[DOMAIN][DATA_BROKERS][config_entry.entry_id]
     selects = []
@@ -150,7 +150,7 @@ STATE_TO_DELI_OPTIONS = {
 
 
 class SmartThingsSelect(SmartThingsEntity, SelectEntity):
-    """Define a SmartThings Select"""
+    """Define a SmartThings Select."""
 
     def __init__(
         self,
@@ -198,7 +198,7 @@ class SmartThingsSelect(SmartThingsEntity, SelectEntity):
 
     @property
     def options(self) -> list[str]:
-        """return valid options"""
+        """Return valid options."""
         return [
             str(x)
             for x in self._device.status.attributes[self._select_options_attr].value
@@ -206,27 +206,28 @@ class SmartThingsSelect(SmartThingsEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        """return current option"""
+        """Return current option."""
         return str(self._device.status.attributes[self._attribute].value)
 
     @property
     def unit_of_measurement(self) -> str | None:
-        """Return unit of measurement"""
+        """Return unit of measurement."""
         return self._device.status.attributes[self._attribute].unit
 
     @property
     def icon(self) -> str | None:
+        """Icon."""
         return self._icon
 
 
 class SamsungACMotionSensorSaver(SmartThingsEntity, SelectEntity):
-    """Define Samsung AC Motion Sensor Saver"""
+    """Define Samsung AC Motion Sensor Saver."""
 
     execute_state = str
     init_bool = False
 
     def startup(self):
-        """Make sure that OCF page visits mode on startup"""
+        """Make sure that OCF page visits mode on startup."""
         tasks = []
         tasks.append(self._device.execute("/mode/vs/0"))
         asyncio.gather(*tasks)
@@ -265,7 +266,7 @@ class SamsungACMotionSensorSaver(SmartThingsEntity, SelectEntity):
 
     @property
     def options(self) -> list[str]:
-        """return valid options"""
+        """Return valid options."""
         modes = []
         for mode in MOTION_SENSOR_SAVER_MODES:
             if (state := MOTION_SENSOR_SAVER_TO_STATE.get(mode)) is not None:
@@ -274,7 +275,7 @@ class SamsungACMotionSensorSaver(SmartThingsEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        """return current option"""
+        """Return current option."""
         if not self.init_bool:
             self.startup()
         if self._device.status.attributes[Attribute.data].data["href"] == "/mode/vs/0":
@@ -289,13 +290,13 @@ class SamsungACMotionSensorSaver(SmartThingsEntity, SelectEntity):
 
 
 class SamsungOcfDeliModeSelect(SmartThingsEntity, SelectEntity):
-    """Define Samsung AC Motion Sensor Saver"""
+    """Define Samsung AC Motion Sensor Saver."""
 
     execute_state = str
     init_bool = False
 
     def startup(self):
-        """Make sure that OCF page visits mode on startup"""
+        """Make sure that OCF page visits mode on startup."""
         tasks = []
         tasks.append(self._device.execute("/mode/vs/0"))
         asyncio.gather(*tasks)
@@ -332,7 +333,7 @@ class SamsungOcfDeliModeSelect(SmartThingsEntity, SelectEntity):
 
     @property
     def options(self) -> list[str]:
-        """return valid options"""
+        """Return valid options."""
         modes = []
         if self._device.status.attributes[Attribute.data].data["href"] == "/mode/vs/0":
             for mode in self._device.status.attributes[Attribute.data].value["payload"][
@@ -344,7 +345,7 @@ class SamsungOcfDeliModeSelect(SmartThingsEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        """return current option"""
+        """Return current option."""
         if not self.init_bool:
             self.startup()
         if self._device.status.attributes[Attribute.data].data["href"] == "/mode/vs/0":
