@@ -4,12 +4,12 @@
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/smartthings",
   "issue_tracker": "https://github.com/veista/smartthings/issues",
-  "requirements": ["pysmartapp==0.3.3", "pysmartthings==0.7.6"],
+  "requirements": ["pysmartapp==0.3.5", "pysmartthings==0.7.8"],
   "dependencies": ["webhook"],
   "after_dependencies": ["cloud"],
   "codeowners": ["@andrewsayre", "@veista"],
   "iot_class": "cloud_push",
-  "version": "1.1.20",
+  "version": "1.1.21",
   "dhcp": [
     {
       "hostname": "st*",
