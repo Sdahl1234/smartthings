@@ -57,7 +57,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Initialize the SmartThings platform."""
-    await setup_smartapp_endpoint(hass)
+    await setup_smartapp_endpoint(hass, False)
     return True
 
 
