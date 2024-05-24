@@ -1,4 +1,5 @@
 """Support for binary sensors through the SmartThings cloud API."""
+
 from __future__ import annotations
 
 import asyncio
@@ -12,7 +13,6 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
 )
 from homeassistant.const import EntityCategory
-from homeassistant.core import HomeAssistant
 
 from . import SmartThingsEntity
 from .const import DATA_BROKERS, DOMAIN, FRIDGE_LIST
@@ -44,7 +44,7 @@ ATTRIB_TO_ENTTIY_CATEGORY = {
 }
 
 
-async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
+async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add binary sensors for a config entry."""
     broker = hass.data[DOMAIN][DATA_BROKERS][config_entry.entry_id]
     sensors = []
@@ -109,7 +109,7 @@ def get_capabilities(capabilities: Sequence[str]) -> Sequence[str] | None:
 class SmartThingsBinarySensor(SmartThingsEntity, BinarySensorEntity):
     """Define a SmartThings Binary Sensor."""
 
-    def __init__(self, device, attribute) -> None:
+    def __init__(self, device, attribute):
         """Init the class."""
         super().__init__(device)
         self._attribute = attribute
@@ -141,20 +141,19 @@ class SmartThingsBinarySensor(SmartThingsEntity, BinarySensorEntity):
 
 
 class SamsungCooktopBurner(SmartThingsEntity, BinarySensorEntity):
-    """Define Samsung Cooktop Burner Sensor."""
+    """Define Samsung Cooktop Burner Sensor"""
 
     execute_state = 0
     output_state = False
     init_bool = False
 
-    def __init__(self, device, name, burner_bitmask) -> None:
-        """Init."""
+    def __init__(self, device, name, burner_bitmask):
         super().__init__(device)
         self._name = name
         self._burner_bitmask = burner_bitmask
 
     def startup(self):
-        """Make sure that OCF page visits cooktopmonitoring on startup."""
+        """Make sure that OCF page visits cooktopmonitoring on startup"""
         tasks = []
         tasks.append(self._device.execute("/cooktopmonitoring/vs/0"))
         asyncio.gather(*tasks)
@@ -194,14 +193,13 @@ class SamsungCooktopBurner(SmartThingsEntity, BinarySensorEntity):
 
     @property
     def icon(self):
-        """Icon."""
         if self.is_on:
             return "mdi:checkbox-blank-circle"
         return "mdi:checkbox-blank-circle-outline"
 
 
 class SamsungOcfModeOptionsBinarySensor(SmartThingsEntity, BinarySensorEntity):
-    """Define Samsung Cooktop Burner Sensor."""
+    """Define Samsung Cooktop Burner Sensor"""
 
     execute_state = False
     init_bool = False
@@ -215,8 +213,7 @@ class SamsungOcfModeOptionsBinarySensor(SmartThingsEntity, BinarySensorEntity):
         device_class: str | None,
         on_icon: str | None,
         off_icon: str | None,
-    ) -> None:
-        """Init."""
+    ):
         super().__init__(device)
         self._name = name
         self._on_value = on_value
@@ -226,7 +223,7 @@ class SamsungOcfModeOptionsBinarySensor(SmartThingsEntity, BinarySensorEntity):
         self._off_icon = off_icon
 
     def startup(self):
-        """Make sure that OCF page visits mode on startup."""
+        """Make sure that OCF page visits mode on startup"""
         tasks = []
         tasks.append(self._device.execute("/mode/vs/0"))
         asyncio.gather(*tasks)
@@ -259,14 +256,13 @@ class SamsungOcfModeOptionsBinarySensor(SmartThingsEntity, BinarySensorEntity):
 
     @property
     def icon(self):
-        """Icon."""
         if self.is_on:
             return self._on_icon
         return self._off_icon
 
 
 class SamsungOcfDoorBinarySensor(SmartThingsEntity, BinarySensorEntity):
-    """Define Samsung Cooktop Burner Sensor."""
+    """Define Samsung Cooktop Burner Sensor"""
 
     execute_state = False
     init_bool = False
@@ -279,8 +275,7 @@ class SamsungOcfDoorBinarySensor(SmartThingsEntity, BinarySensorEntity):
         on_value: str,
         off_value: str,
         device_class: str | None,
-    ) -> None:
-        """Init."""
+    ):
         super().__init__(device)
         self._name = name
         self._page = page
@@ -289,7 +284,7 @@ class SamsungOcfDoorBinarySensor(SmartThingsEntity, BinarySensorEntity):
         self._attr_device_class = device_class
 
     def startup(self):
-        """Make sure that OCF page visits mode on startup."""
+        """Make sure that OCF page visits mode on startup"""
         tasks = []
         tasks.append(self._device.execute(self._page))
         asyncio.gather(*tasks)

@@ -1,4 +1,5 @@
 """Constants used by the SmartThings component and platforms."""
+
 from datetime import timedelta
 import re
 
@@ -39,18 +40,18 @@ STORAGE_VERSION = 1
 # Ordered 'specific to least-specific platform' in order for capabilities
 # to be drawn-down and represented by the most appropriate platform.
 PLATFORMS = [
-    "binary_sensor",
-    "button",
     "climate",
-    "cover",
     "fan",
     "light",
     "lock",
+    "cover",
     "number",
-    "scene",
     "select",
-    "sensor",
+    "button",
     "switch",
+    "binary_sensor",
+    "sensor",
+    "scene",
 ]
 
 IGNORED_CAPABILITIES = [

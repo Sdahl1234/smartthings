@@ -1,4 +1,5 @@
 """Support for climate devices through the SmartThings cloud API."""
+
 from __future__ import annotations
 
 import asyncio
@@ -7,18 +8,16 @@ import logging
 
 from pysmartthings import Attribute, Capability
 
-from homeassistant.components.climate import (
+from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN, ClimateEntity
+from homeassistant.components.climate.const import (
     ATTR_HVAC_MODE,
     ATTR_TARGET_TEMP_HIGH,
     ATTR_TARGET_TEMP_LOW,
-    DOMAIN as CLIMATE_DOMAIN,
-    ClimateEntity,
     ClimateEntityFeature,
     HVACAction,
     HVACMode,
 )
 from homeassistant.const import ATTR_TEMPERATURE
-from homeassistant.core import HomeAssistant
 
 from . import SmartThingsEntity
 from .const import DATA_BROKERS, DOMAIN, UNIT_MAP
@@ -75,7 +74,7 @@ STATE_TO_AC_MODE = {
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
+async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add climate entities for a config entry."""
     ac_capabilities = [
         Capability.air_conditioner_mode,
@@ -143,7 +142,7 @@ def get_capabilities(capabilities: Sequence[str]) -> Sequence[str] | None:
 class SmartThingsThermostat(SmartThingsEntity, ClimateEntity):
     """Define a SmartThings climate entities."""
 
-    def __init__(self, device) -> None:
+    def __init__(self, device):
         """Init the class."""
         super().__init__(device)
         self._supported_features = self._determine_features()
@@ -325,7 +324,7 @@ class SmartThingsAirConditioner(SmartThingsEntity, ClimateEntity):
 
     is_faulty_quiet = False
 
-    def __init__(self, device) -> None:
+    def __init__(self, device):
         """Init the class."""
         super().__init__(device)
         self._hvac_modes = None
@@ -449,7 +448,9 @@ class SmartThingsAirConditioner(SmartThingsEntity, ClimateEntity):
 
     @property
     def extra_state_attributes(self):
-        """Return device specific state attributes."""
+        """
+        Return device specific state attributes.
+        """
         attributes = []
         custom_attributes = []
         state_attributes = {}
@@ -480,7 +481,7 @@ class SmartThingsAirConditioner(SmartThingsEntity, ClimateEntity):
 
     @property
     def swing_modes(self):
-        """Give all swing modes, if attribute is found it most likely works. Samsung gives null, work-around."""
+        """Give all swing modes, if attribute is found it most likely works. Samsung gives null, work-around"""
         if (
             self._device.status.attributes["supportedFanOscillationModes"].value
             is not None
@@ -565,12 +566,12 @@ class SmartThingsAirConditioner(SmartThingsEntity, ClimateEntity):
 
     @property
     def max_temp(self):
-        """Return the maximum temperature limit."""
+        """Return the maximum temperature limit"""
         return int(self._device.status.attributes["maximumSetpoint"].value)
 
     @property
     def min_temp(self):
-        """Return the minimum temperature limit."""
+        """Return the minimum temperature limit"""
         return int(self._device.status.attributes["minimumSetpoint"].value)
 
     @property
@@ -580,7 +581,7 @@ class SmartThingsAirConditioner(SmartThingsEntity, ClimateEntity):
 
     @property
     def target_temperature_step(self):
-        """Set the target temperature step size."""
+        """set the target temperature step size"""
         return 1.0
 
     @property

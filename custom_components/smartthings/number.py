@@ -1,21 +1,26 @@
 """Support for numbers through the SmartThings cloud API."""
+
 from __future__ import annotations
 
-import asyncio
 from collections import namedtuple
 from collections.abc import Sequence
+
+import asyncio
+
 from typing import Literal
 
 from pysmartthings import Attribute, Capability
 from pysmartthings.device import DeviceEntity
 
 from homeassistant.components.number import NumberEntity, NumberMode
+
 from homeassistant.components.sensor import SensorDeviceClass
-from homeassistant.const import PERCENTAGE
-from homeassistant.core import HomeAssistant
+
 
 from . import SmartThingsEntity
-from .const import DATA_BROKERS, DOMAIN, FRIDGE_LIST, UNIT_MAP
+from .const import DATA_BROKERS, DOMAIN, UNIT_MAP, FRIDGE_LIST
+
+from homeassistant.const import PERCENTAGE
 
 Map = namedtuple(
     "map",
@@ -39,7 +44,7 @@ CAPABILITY_TO_NUMBER = {
 }
 
 
-async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
+async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add numbers for a config entries."""
     broker = hass.data[DOMAIN][DATA_BROKERS][config_entry.entry_id]
     numbers = []
@@ -161,18 +166,18 @@ class SmartThingsNumber(SmartThingsEntity, NumberEntity):
 
     @property
     def native_step(self) -> float:
-        """Define stepping size."""
+        """Define stepping size"""
         return self._attr_native_step
 
     @property
     def native_unit_of_measurement(self) -> str | None:
-        """Return unit of measurement."""
+        """Return unit of measurement"""
         unit = self._device.status.attributes[self._attribute].unit
         return UNIT_MAP.get(unit) if unit else self._attr_native_unit_of_measurement
 
     @property
     def mode(self) -> Literal["auto", "slider", "box"]:
-        """Return representation mode."""
+        """Return representation mode"""
         return self._attr_mode
 
 
@@ -199,7 +204,7 @@ class SamsungOcfTemperatureNumber(SmartThingsEntity, NumberEntity):
         self._attr_mode = mode
 
     def startup(self):
-        """Make sure that OCF page visits mode on startup."""
+        """Make sure that OCF page visits mode on startup"""
         tasks = []
         tasks.append(self._device.execute(self._page))
         asyncio.gather(*tasks)
@@ -275,12 +280,12 @@ class SamsungOcfTemperatureNumber(SmartThingsEntity, NumberEntity):
 
     @property
     def native_step(self) -> float:
-        """Define stepping size."""
+        """Define stepping size"""
         return 1
 
     @property
     def native_unit_of_measurement(self) -> str | None:
-        """Return unit of measurement."""
+        """Return unit of measurement"""
         if self._device.status.attributes[Attribute.data].data["href"] == self._page:
             self.unit_state = self._device.status.attributes[Attribute.data].value[
                 "payload"
@@ -289,7 +294,7 @@ class SamsungOcfTemperatureNumber(SmartThingsEntity, NumberEntity):
 
     @property
     def mode(self) -> Literal["auto", "slider", "box"]:
-        """Return representation mode."""
+        """Return representation mode"""
         return self._attr_mode
 
     @property

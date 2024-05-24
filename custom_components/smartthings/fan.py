@@ -1,4 +1,5 @@
 """Support for fans through the SmartThings cloud API."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -7,7 +8,6 @@ import math
 from pysmartthings import Capability
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
-from homeassistant.core import HomeAssistant
 from homeassistant.util.percentage import (
     int_states_in_range,
     percentage_to_ranged_value,
@@ -20,7 +20,7 @@ from .const import DATA_BROKERS, DOMAIN
 SPEED_RANGE = (1, 3)  # off is not included
 
 
-async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
+async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add fans for a config entry."""
     broker = hass.data[DOMAIN][DATA_BROKERS][config_entry.entry_id]
     async_add_entities(
@@ -58,9 +58,9 @@ class SmartThingsFan(SmartThingsEntity, FanEntity):
 
     async def async_turn_on(
         self,
+        speed: str = None,
         percentage: int = None,
         preset_mode: str = None,
-        speed: str = None,
         **kwargs,
     ) -> None:
         """Turn the fan on."""
