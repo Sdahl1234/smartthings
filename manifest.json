@@ -1,0 +1,36 @@
+{
+  "domain": "smartthings",
+  "name": "SmartThings",
+  "config_flow": true,
+  "documentation": "https://github.com/Sdahl1234/smartthings",
+  "issue_tracker": "https://github.com/Sdahl1234/smartthings/issues",
+  "requirements": ["pysmartapp==0.3.5", "pysmartthings==0.7.8"],
+  "loggers": ["pysmartapp", "pysmartthings"],
+  "dependencies": ["webhook"],
+  "after_dependencies": ["cloud"],
+  "codeowners": ["@Sdahl1234"],
+  "iot_class": "cloud_push",
+  "version": "1.1.24",
+  "dhcp": [
+    {
+      "hostname": "st*",
+      "macaddress": "24FD5B*"
+    },
+    {
+      "hostname": "smartthings*",
+      "macaddress": "24FD5B*"
+    },
+    {
+      "hostname": "hub*",
+      "macaddress": "24FD5B*"
+    },
+    {
+      "hostname": "hub*",
+      "macaddress": "D052A8*"
+    },
+    {
+      "hostname": "hub*",
+      "macaddress": "286D97*"
+    }
+  ]
+}
